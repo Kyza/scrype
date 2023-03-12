@@ -1,0 +1,2 @@
+# scrype
+Script your typing.
