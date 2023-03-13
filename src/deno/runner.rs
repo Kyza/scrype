@@ -76,7 +76,7 @@ pub fn start_macro(macro_name: &String, match_config: config::Match) {
 		shared_array_buffer_store: None,
 		compiled_wasm_module_store: None,
 		stdio: Default::default(),
-		leak_isolate: true,
+		leak_isolate: false,
 	};
 
 	let main_module =

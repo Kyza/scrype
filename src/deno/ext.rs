@@ -5,41 +5,45 @@ use rdev::Key;
 use crate::{config, history, simulate};
 
 #[op]
-fn pressKey(key: Key) -> Result<(), deno_core::error::AnyError> {
+fn scrype_pressKey(key: Key) -> Result<(), deno_core::error::AnyError> {
 	simulate::press_key(key);
 	Ok(())
 }
 #[op]
-fn pressKeys(keys: Vec<Key>) -> Result<(), deno_core::error::AnyError> {
+fn scrype_pressKeys(
+	keys: Vec<Key>,
+) -> Result<(), deno_core::error::AnyError> {
 	simulate::press_keys(keys);
 	Ok(())
 }
 
 #[op]
-fn releaseKey(key: Key) -> Result<(), deno_core::error::AnyError> {
+fn scrype_releaseKey(key: Key) -> Result<(), deno_core::error::AnyError> {
 	simulate::release_key(key);
 	Ok(())
 }
 #[op]
-fn releaseKeys(keys: Vec<Key>) -> Result<(), deno_core::error::AnyError> {
+fn scrype_releaseKeys(
+	keys: Vec<Key>,
+) -> Result<(), deno_core::error::AnyError> {
 	simulate::release_keys(keys);
 	Ok(())
 }
 
 #[op]
-fn typeKey(key: Key) -> Result<(), deno_core::error::AnyError> {
+fn scrype_typeKey(key: Key) -> Result<(), deno_core::error::AnyError> {
 	simulate::type_key(key);
 	Ok(())
 }
 
 #[op]
-fn typeKeys(keys: Vec<Key>) -> Result<(), deno_core::error::AnyError> {
+fn scrype_typeKeys(keys: Vec<Key>) -> Result<(), deno_core::error::AnyError> {
 	simulate::type_keys(keys);
 	Ok(())
 }
 
 #[op]
-fn sendText(text: String) -> Result<(), deno_core::error::AnyError> {
+fn scrype_pasteText(text: String) -> Result<(), deno_core::error::AnyError> {
 	let mut clipboard = Clipboard::new()?;
 	let previous = clipboard.get_text()?;
 
@@ -56,17 +60,17 @@ fn sendText(text: String) -> Result<(), deno_core::error::AnyError> {
 }
 
 #[op]
-fn getHistory() -> Result<String, deno_core::error::AnyError> {
+fn scrype_getHistory() -> Result<String, deno_core::error::AnyError> {
 	Ok(history::get_history())
 }
 
 #[op]
-fn getConfigDirectory() -> Result<String, deno_core::error::AnyError> {
+fn scrype_getConfigDirectory() -> Result<String, deno_core::error::AnyError> {
 	Ok(config::get_config_directory().to_string_lossy().to_string())
 }
 
 #[op]
-fn getConfigOptions(
+fn scrype_getConfigOptions(
 ) -> Result<config::ScrypeSettings, deno_core::error::AnyError> {
 	Ok(config::get_config())
 }
@@ -77,16 +81,16 @@ fn ext() -> ExtensionBuilder {
 
 pub(crate) fn ops(ext: &mut ExtensionBuilder) -> &mut ExtensionBuilder {
 	ext.ops(vec![
-		pressKey::decl(),
-		pressKeys::decl(),
-		releaseKey::decl(),
-		releaseKeys::decl(),
-		typeKey::decl(),
-		typeKeys::decl(),
-		sendText::decl(),
-		getHistory::decl(),
-		getConfigDirectory::decl(),
-		getConfigOptions::decl(),
+		scrype_pressKey::decl(),
+		scrype_pressKeys::decl(),
+		scrype_releaseKey::decl(),
+		scrype_releaseKeys::decl(),
+		scrype_typeKey::decl(),
+		scrype_typeKeys::decl(),
+		scrype_pasteText::decl(),
+		scrype_getHistory::decl(),
+		scrype_getConfigDirectory::decl(),
+		scrype_getConfigOptions::decl(),
 	])
 }
 

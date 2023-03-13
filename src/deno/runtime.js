@@ -1,4 +1,4 @@
-const ops = globalThis.Deno.ops;
+const ops = globalThis.Deno[Deno.internal].core.ops;
 
 globalThis.scrype = { ops };
 
