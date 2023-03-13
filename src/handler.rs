@@ -65,7 +65,10 @@ pub fn event_listener(event: Event) -> Option<Event> {
 											backspace_amount
 										]);
 
-										start_macro(&macro_name.clone());
+										start_macro(
+											&macro_name.clone(),
+											macro_config_match,
+										);
 
 										history::clear_history();
 										unlock_handler();

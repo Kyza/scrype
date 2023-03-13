@@ -12,6 +12,8 @@ use deno_runtime::BootstrapOptions;
 use std::rc::Rc;
 use std::sync::Arc;
 
+use path_absolutize::*;
+
 use crate::config;
 
 use super::ext;
@@ -20,10 +22,11 @@ fn get_error_class_name(e: &AnyError) -> &'static str {
 	deno_runtime::errors::get_error_class_name(e).unwrap_or("Error")
 }
 
-pub fn start_macro(macro_name: &str) {
+pub fn start_macro(macro_name: &String, match_config: config::Match) {
 	let macro_path = config::get_config_directory()
 		.join(macro_name)
-		.join("index.js");
+		.join(match_config.entry);
+	let macro_path = macro_path.absolutize().unwrap();
 	println!("{:?}", macro_path);
 
 	let module_loader = Rc::new(FsModuleLoader);

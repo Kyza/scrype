@@ -21,3 +21,4 @@ rust-embed = { version = "6.6.0", features = [
 	"include-exclude",
 	"include-flate",
 ] }
+path-absolutize = "3.0.14"
