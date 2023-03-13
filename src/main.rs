@@ -1,8 +1,6 @@
-#![feature(pin_macro)]
-
 use std::{
-    sync::atomic::{AtomicBool, Ordering},
-    thread,
+	sync::atomic::{AtomicBool, Ordering},
+	thread,
 };
 
 use lazy_static::lazy_static;
@@ -20,8 +18,8 @@ pub mod macros;
 pub mod simulate;
 
 fn main() {
-    // This will block.
-    if let Err(error) = grab(handler::event_listener) {
-        println!("Error: {:?}", error)
-    }
+	// This will block.
+	if let Err(error) = grab(handler::event_listener) {
+		println!("Error: {:?}", error)
+	}
 }
