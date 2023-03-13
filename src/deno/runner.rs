@@ -1,6 +1,4 @@
 use deno_core::futures::executor;
-use deno_core::Extension;
-use rust_embed::RustEmbed;
 
 // #[derive(RustEmbed)]
 // #[folder = "src/deno/"]
@@ -15,7 +13,7 @@ use deno_runtime::permissions::PermissionsContainer;
 use deno_runtime::worker::MainWorker;
 use deno_runtime::worker::WorkerOptions;
 use deno_runtime::BootstrapOptions;
-use std::path::Path;
+
 use std::rc::Rc;
 use std::sync::Arc;
 

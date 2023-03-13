@@ -1,14 +1,4 @@
-use std::{
-	sync::atomic::{AtomicBool, Ordering},
-	thread,
-};
-
-use lazy_static::lazy_static;
-use rdev::{grab, Event, EventType, Key};
-
-use deno_core::JsRuntime;
-use deno_core::RuntimeOptions;
-use deno_core::{futures::executor, Extension};
+use rdev::grab;
 
 pub mod config;
 pub mod deno;

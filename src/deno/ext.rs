@@ -1,5 +1,5 @@
 use arboard::Clipboard;
-use deno_core::{include_js_files, op, Extension, ExtensionBuilder, OpDecl};
+use deno_core::{include_js_files, op, Extension, ExtensionBuilder};
 use rdev::Key;
 
 use crate::{config, history, simulate};
