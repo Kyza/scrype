@@ -19,6 +19,10 @@ lazy_static! {
 	static ref MAX_HISTORY_SIZE: AtomicUsize = AtomicUsize::new(30);
 }
 
+pub fn init() {
+	// TODO: Initialize the settings to the values in the config.
+}
+
 pub fn backspace_history() {
 	HISTORY.lock().unwrap().pop();
 }
@@ -72,5 +76,11 @@ pub fn get_max_history_size() -> usize {
 	return MAX_HISTORY_SIZE.load(Ordering::SeqCst);
 }
 pub fn set_max_history_size(size: usize) {
+	// Don't forget to remove characters from the start until the size matches the new max size.
+	let old_size = MAX_HISTORY_SIZE.load(Ordering::SeqCst);
 	MAX_HISTORY_SIZE.store(size, Ordering::SeqCst);
+	if old_size > size {
+		let amount_over = old_size.saturating_sub(size);
+		HISTORY.lock().unwrap().drain(0..amount_over);
+	}
 }
