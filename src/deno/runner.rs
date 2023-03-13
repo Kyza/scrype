@@ -1,10 +1,5 @@
 use deno_core::futures::executor;
 
-// #[derive(RustEmbed)]
-// #[folder = "src/deno/"]
-// #[include = "runtime.js"]
-// pub struct Runtime;
-
 use deno_core::error::AnyError;
 use deno_core::FsModuleLoader;
 use deno_runtime::deno_broadcast_channel::InMemoryBroadcastChannel;
@@ -96,7 +91,7 @@ pub fn start_macro(macro_name: &str) {
 		println!("{:?}", err);
 	}
 
-	let worker_result = executor::block_on(worker.run_event_loop(false));
+	let worker_result = executor::block_on(worker.run_event_loop(true));
 	if let Err(err) = worker_result {
 		println!("{:?}", err);
 	}

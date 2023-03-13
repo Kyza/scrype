@@ -41,47 +41,56 @@ pub fn event_listener(event: Event) -> Option<Event> {
 					for macro_name in config.macros {
 						let macro_config =
 							config::get_macro_config(&macro_name);
-						if macro_config.match_type == config::MatchType::Text
-						{
-							if history.ends_with(&macro_config.r#match) {
-								lock_handler();
 
-								let backspace_amount =
-									macro_config.r#match.len()
-										+ config.prefix.len() + config
-										.suffix
-										.len();
-								thread::spawn(move || {
-									simulate::type_keys(vec![
-										Key::Backspace;
-										backspace_amount
-									]);
+						for macro_config_match in macro_config.matches {
+							if macro_config_match.r#type
+								== config::MatchType::Text
+							{
+								if history
+									.ends_with(&macro_config_match.r#match)
+								{
+									lock_handler();
 
-									start_macro(&macro_name);
+									let backspace_amount =
+										macro_config_match.r#match.len()
+											+ config.prefix.len() + config
+											.suffix
+											.len();
 
-									history::clear_history();
-									unlock_handler();
-									// // Build a deno_core::Extension providing custom ops
-									// let ext = Extension::builder("my_ext")
-									//     .ops(js::ops::get_all_ops())
-									//     .build();
+									// Clone the name so it doesn't get moved.
+									let macro_name = macro_name.clone();
+									thread::spawn(move || {
+										simulate::type_keys(vec![
+											Key::Backspace;
+											backspace_amount
+										]);
 
-									// // Initialize a runtime instance
-									// let mut runtime = JsRuntime::new(RuntimeOptions {
-									//     extensions: vec![ext],
-									//     ..Default::default()
-									// });
+										start_macro(&macro_name.clone());
 
-									// // Now we see how to invoke the op we just defined. The runtime automatically
-									// // contains a Deno.core object with several functions for interacting with it.
-									// // You can find its definition in core.js.
+										history::clear_history();
+										unlock_handler();
+										// // Build a deno_core::Extension providing custom ops
+										// let ext = Extension::builder("my_ext")
+										//     .ops(js::ops::get_all_ops())
+										//     .build();
 
-									// runtime
-									//     .execute_script("<usage>", "Deno.core.ops.sendText('works');")
-									//     .unwrap();
+										// // Initialize a runtime instance
+										// let mut runtime = JsRuntime::new(RuntimeOptions {
+										//     extensions: vec![ext],
+										//     ..Default::default()
+										// });
 
-									//   executor::block_on(runtime.run_event_loop(true)).unwrap();
-								});
+										// // Now we see how to invoke the op we just defined. The runtime automatically
+										// // contains a Deno.core object with several functions for interacting with it.
+										// // You can find its definition in core.js.
+
+										// runtime
+										//     .execute_script("<usage>", "Deno.core.ops.sendText('works');")
+										//     .unwrap();
+
+										//   executor::block_on(runtime.run_event_loop(true)).unwrap();
+									});
+								}
 							}
 						}
 					}
