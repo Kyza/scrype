@@ -1,5 +1,5 @@
 use arboard::Clipboard;
-use deno_core::{op, OpDecl};
+use deno_core::{include_js_files, op, Extension, ExtensionBuilder, OpDecl};
 use rdev::Key;
 
 use crate::{config, history, simulate};
@@ -65,8 +65,17 @@ fn getConfigDirectory() -> Result<String, deno_core::error::AnyError> {
     Ok(config::get_config_directory().to_string_lossy().to_string())
 }
 
-pub(crate) fn get_all_ops() -> Vec<OpDecl> {
-    vec![
+#[op]
+fn getConfigOptions() -> Result<config::ScrypeSettings, deno_core::error::AnyError> {
+    Ok(config::get_config())
+}
+
+fn ext() -> ExtensionBuilder {
+    Extension::builder(env!("CARGO_PKG_NAME"))
+}
+
+pub(crate) fn ops(ext: &mut ExtensionBuilder) -> &mut ExtensionBuilder {
+    ext.ops(vec![
         pressKey::decl(),
         pressKeys::decl(),
         releaseKey::decl(),
@@ -76,5 +85,16 @@ pub(crate) fn get_all_ops() -> Vec<OpDecl> {
         sendText::decl(),
         getHistory::decl(),
         getConfigDirectory::decl(),
-    ]
+        getConfigOptions::decl(),
+    ])
+}
+
+pub fn init_ops_and_esm() -> Extension {
+    ops(&mut ext())
+        .esm(include_js_files!("runtime.js",))
+        .build()
+}
+
+pub fn init_ops() -> Extension {
+    ops(&mut ext()).build()
 }

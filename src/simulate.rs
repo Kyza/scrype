@@ -4,7 +4,7 @@ use std::thread;
 use rdev::{simulate, EventType, Key};
 
 pub fn send_key(key: Key, release: bool) {
-    let delay = time::Duration::from_millis(20);
+    let delay = time::Duration::from_millis(1);
 
     if release {
         match simulate(&EventType::KeyRelease(key)) {
