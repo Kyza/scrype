@@ -4,7 +4,7 @@ Script your typing.
 
 ## What is this?
 
-Scrype is a cross-platform program that watches what you type and runs scripts when it detects certain characters have been typed.
+Scrype is a cross-platform program that watches what you type and runs scripts when it detects certain strings have been typed.
 
 Those scripts can then perform actions and return text to type out in response.
 
