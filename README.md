@@ -6,7 +6,7 @@ Script your typing.
 
 Scrype is a cross-platform program that watches what you type and runs scripts when it detects certain strings have been typed.
 
-Those scripts can then perform actions and return text to type out in response.
+Those scripts are run in Deno, and can then perform actions and return text to type out in response.
 
 For example you could type `shrug`, Scrype would erase that, and the script would type out `¯\_(ツ)_/¯`.
 
