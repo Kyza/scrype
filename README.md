@@ -19,7 +19,7 @@ This feature exists because in alternatives such as [Espanso](https://github.com
 ## Features
 
 | Feature | Status | How To Implement |
-| - | - | - |
+| - | :-: | - |
 | Deno Macro Runner | ✅ |  |
 | Global Prefix & Suffix | ✅ |  |
 | Text Pasting | ✅ |  |
