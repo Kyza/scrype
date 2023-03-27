@@ -52,8 +52,10 @@ pub fn get_config_directory() -> PathBuf {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum MatchType {
 	Text,
+	#[serde(rename = "regex")]
 	RegEx,
 	Pomsky,
 }

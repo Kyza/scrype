@@ -1,6 +1,7 @@
 use core::time;
 use std::thread;
 
+use arboard::Clipboard;
 use rdev::{simulate, EventType, Key};
 
 pub fn send_key(key: Key, release: bool) {
@@ -53,5 +54,25 @@ pub fn type_keys(keys: Vec<Key>) {
 	for key in keys {
 		press_key(key);
 		release_key(key);
+	}
+}
+
+pub fn paste_text(text: &str) {
+	let mut clipboard = Clipboard::new().expect("Couldn't get clipboard.");
+	let old_text_result = clipboard.get_text();
+
+	clipboard
+		.set_text(text)
+		.expect("Couldn't set clipboard text.");
+
+	press_key(Key::ControlLeft);
+	press_key(Key::KeyV);
+	release_key(Key::ControlLeft);
+	release_key(Key::KeyV);
+
+	if let Ok(old_text) = old_text_result {
+		clipboard
+			.set_text(old_text)
+			.expect("Couldn't reset clipboard text.");
 	}
 }

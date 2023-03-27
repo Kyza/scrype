@@ -7,8 +7,6 @@ edition = "2021"
 
 [dependencies]
 rdev = { version = "0.5.2", features = ["serialize", "unstable_grab"] }
-deno_core = "0.174.0"
-deno_runtime = "0.100.0"
 pomsky-macro = "0.9.0"
 lazy_static = "1.4.0"
 fancy-regex = "0.11.0"
@@ -22,3 +20,4 @@ rust-embed = { version = "6.6.0", features = [
 	"include-flate",
 ] }
 path-absolutize = "3.0.14"
+# duct = "0.13.6"
