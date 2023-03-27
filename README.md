@@ -23,6 +23,9 @@ This feature exists because in alternatives such as [Espanso](https://github.com
 | Deno Macro Runner | ✅ |  |
 | Global Prefix & Suffix | ✅ |  |
 | Text Pasting | ✅ |  |
+| Text Matching | ✅ |  |
+| RegEx Matching | ⏲️ | Match using RegEx in Rust, then pass the matched groups to the script. |
+| [Pomsky](https://github.com/pomsky-lang/pomsky) Matching | ⏲️ | The same as RegEx, but use the Pomsky core to match instead. |
 | Direct Text Injection | ⏲️ | Write native bindings for each platform. |
 | Custom Deno Path | ⏲️ | Set path in main config. |
 | Macro Permissions With Deno | ⏲️ | Set Deno args in main config. |
