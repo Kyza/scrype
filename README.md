@@ -105,7 +105,13 @@ webview.run();
 				switch (event.key) {
 					case "Enter":
 						const evalFunction = new Function(`return (${event.target.value})`);
-						resolve(evalFunction().toString());
+						let result = evalFunction();
+						try {
+							result = JSON.stringify(result);
+						} catch {
+							result = result.toString();
+						}
+						resolve(result);
 						break;
 					case "Escape":
 						exit();
