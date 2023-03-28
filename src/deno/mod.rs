@@ -5,12 +5,15 @@ use std::{
 };
 
 use path_absolutize::Absolutize;
-use rdev::Key;
+
+use serde_json::Result;
 
 use crate::{
 	config,
-	simulate::{paste_text, release_keys},
+	deno::actions::{handle_action, ScrypeAction},
 };
+
+pub mod actions;
 
 pub fn start_macro(macro_name: &String, match_config: config::Match) {
 	let macro_file_path = config::get_config_directory()
@@ -18,13 +21,13 @@ pub fn start_macro(macro_name: &String, match_config: config::Match) {
 		.join(match_config.entry);
 	let macro_file_path = macro_file_path
 		.absolutize()
-		.expect("Couldn't absolutize macro path.");
+		.expect("Failed to absolutize macro path.");
 	let macro_path =
 		macro_file_path.parent().expect("Macro path has no parent.");
 
 	let macro_file =
 		fs::read_to_string(macro_file_path.to_string_lossy().to_string())
-			.expect("Couldn't read macro file.");
+			.expect("Failed to read macro file.");
 
 	let runtime = include_str!("runtime.ts");
 
@@ -41,9 +44,9 @@ pub fn start_macro(macro_name: &String, match_config: config::Match) {
 		.stdin(Stdio::piped())
 		.stdout(Stdio::piped())
 		.spawn()
-		.expect("Couldn't launch Deno.");
+		.expect("Failed to launch Deno.");
 
-	let output = deno.wait_with_output().expect("Couldn't wait for Deno.");
+	let output = deno.wait_with_output().expect("Failed to wait for Deno.");
 
 	// match output.status {
 	// 	ExitStatus => run_tasks(&output),
@@ -54,32 +57,35 @@ pub fn start_macro(macro_name: &String, match_config: config::Match) {
 }
 
 pub fn run_tasks(output: &Output) {
-	// Release any important modifier keys.
-	release_keys(vec![
-		Key::ShiftLeft,
-		Key::ShiftRight,
-		Key::ControlLeft,
-		Key::ControlRight,
-		Key::MetaLeft,
-		Key::MetaRight,
-		Key::Alt,
-		Key::AltGr,
-	]);
-
 	let lines = output.stdout.lines();
 
 	for line in lines {
-		let line = line.expect("Couldn't read script stdout lines.");
+		let line = line.expect("Failed to read script stdout lines.");
 
-		println!("{}", line);
-
-		if line.starts_with("scrype_paste_text:") {
-			println!("PASTING");
+		if line.starts_with("[SCRYPE]:") {
+			// It's an API action, so try to parse and run it.
 			let idx = line
 				.find(':')
 				.expect(&format!("\"{}\" does not have a \":\".", line));
-			let (_, text) = line.split_at(idx + 1);
-			paste_text(text);
+			let action_data = line.split_at(idx + 1).1.trim();
+
+			let action: Result<ScrypeAction> =
+				serde_json::from_str(action_data);
+
+			match action {
+				Err(err) => {
+					println!(
+						"Failed to deserialize action \"\n{}\".\n{}",
+						action_data, err
+					);
+				}
+				Ok(action) => {
+					handle_action(&action);
+				}
+			}
+		} else {
+			// It's a normal line, so print it.
+			println!("{}", line);
 		}
 	}
 }

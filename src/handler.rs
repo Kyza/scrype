@@ -1,8 +1,11 @@
 use std::{
+	future::join,
 	sync::atomic::{AtomicBool, Ordering},
 	thread,
+	time::{Duration, Instant},
 };
 
+use futures::executor::block_on;
 use lazy_static::lazy_static;
 use rdev::{Event, EventType, Key};
 
@@ -29,6 +32,7 @@ pub fn event_listener(event: Event) -> Option<Event> {
 	if is_handler_locked() {
 		return Some(event);
 	}
+	let now = Instant::now();
 
 	match event.event_type {
 		EventType::KeyPress(_) => {
@@ -71,18 +75,41 @@ pub fn event_listener(event: Event) -> Option<Event> {
 								// Clone the name so it doesn't get moved.
 								let macro_name = macro_name.clone();
 								thread::spawn(move || {
-									simulate::type_keys(vec![
-										Key::Backspace;
-										backspace_amount
-									]);
+									block_on(async {
+										let backspace_fut = async {
+											simulate::type_keys(
+												&vec![
+													Key::Backspace;
+													backspace_amount
+												],
+												Duration::NANOSECOND,
+											).expect("Failed to backspace matched text.");
+										};
 
-									start_macro(
-										&macro_name,
-										macro_config_match,
-									);
+										let macro_fut = async {
+											let code_now = Instant::now();
+											start_macro(
+												&macro_name,
+												macro_config_match,
+											);
+											println!(
+												"Macro code ran in {}ms.",
+												code_now
+													.elapsed()
+													.as_millis()
+											);
+										};
 
-									history::clear_history();
-									unlock_handler();
+										join!(backspace_fut, macro_fut).await;
+
+										history::clear_history();
+										unlock_handler();
+
+										println!(
+											"Macro ran in {}ms.",
+											now.elapsed().as_millis()
+										);
+									});
 								});
 
 								return Some(event);

@@ -24,18 +24,22 @@ This feature exists because in alternatives such as [Espanso](https://github.com
 
 ## Features
 
+✅ Implemented | ⏲️ Planned | ❔ Considering
+
 | Feature | Status | How To Implement |
 | :-: | :-: | :-: |
-| [Deno](https://github.com/denoland/deno) Script Runner | ✅ |  |
+| [Deno](https://github.com/denoland/deno) Code Runner | ✅ |  |
+| Native Code Runner | ❔ | Run compiled libraries in FFI. |
 | Global Prefix & Suffix | ✅ |  |
+| Macro Permissions With Deno | ⏲️ | Set Deno args in main config. |
 | Text Pasting | ✅ |  |
+| Direct Text Injection | ⏲️ | Write native bindings for each platform. |
 | Text Matching | ✅ |  |
 | RegEx Matching | ⏲️ | Match using RegEx in Rust, then pass the matched groups to the script. |
 | [Pomsky](https://github.com/pomsky-lang/pomsky) Matching | ⏲️ | The same as RegEx, but use the Pomsky core to match instead. |
-| Direct Text Injection | ⏲️ | Write native bindings for each platform. |
 | Custom Deno Path | ⏲️ | Set path in main config. |
-| Macro Permissions With Deno | ⏲️ | Set Deno args in main config. |
 | Backspace To Undo | ⏲️ | Track how many characters are sent and the history match of the last macro. |
+| Android | ❔ | Use accessibility API. |
 
 ## Ideas
 

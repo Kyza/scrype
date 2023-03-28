@@ -1,78 +1,86 @@
-use core::time;
-use std::thread;
+use std::{thread, time::Duration};
 
 use arboard::Clipboard;
-use rdev::{simulate, EventType, Key};
+use rdev::{simulate, EventType, Key, SimulateError};
 
-pub fn send_key(key: Key, release: bool) {
-	let delay = time::Duration::from_millis(1);
-
+pub fn send_key(
+	key: Key,
+	release: bool,
+	delay: Duration,
+) -> Result<(), SimulateError> {
 	if release {
-		match simulate(&EventType::KeyRelease(key)) {
-			Ok(()) => (),
-			Err(simulate_error) => {
-				println!("Failed to send key {:?}", key);
-				println!("{:?}", simulate_error);
-			}
-		}
+		simulate(&EventType::KeyRelease(key))?
 	} else {
-		match simulate(&EventType::KeyPress(key)) {
-			Ok(()) => (),
-			Err(simulate_error) => {
-				println!("Failed to send key {:?}", key);
-				println!("{:?}", simulate_error);
-			}
-		}
+		simulate(&EventType::KeyPress(key))?
 	}
 
-	thread::sleep(delay);
+	if !delay.is_zero() {
+		thread::sleep(delay);
+	}
+
+	Ok(())
 }
 
-pub fn press_key(key: Key) {
-	send_key(key, false);
+pub fn press_key(key: Key, delay: Duration) -> Result<(), SimulateError> {
+	send_key(key, false, delay)
 }
-pub fn press_keys(keys: Vec<Key>) {
+pub fn press_keys(
+	keys: &Vec<Key>,
+	delay: Duration,
+) -> Result<(), SimulateError> {
 	for key in keys {
-		send_key(key, false);
+		send_key(*key, false, delay)?;
 	}
+	Ok(())
 }
 
-pub fn release_key(key: Key) {
-	send_key(key, true);
+pub fn release_key(key: Key, delay: Duration) -> Result<(), SimulateError> {
+	send_key(key, true, delay)
 }
-pub fn release_keys(keys: Vec<Key>) {
+pub fn release_keys(
+	keys: &Vec<Key>,
+	delay: Duration,
+) -> Result<(), SimulateError> {
 	for key in keys {
-		send_key(key, true);
+		send_key(*key, true, delay)?;
 	}
+	Ok(())
 }
 
-pub fn type_key(key: Key) {
-	press_key(key);
-	release_key(key);
+pub fn type_key(key: Key, delay: Duration) -> Result<(), SimulateError> {
+	press_key(key, delay)?;
+	release_key(key, delay)?;
+	Ok(())
 }
-pub fn type_keys(keys: Vec<Key>) {
+pub fn type_keys(
+	keys: &Vec<Key>,
+	delay: Duration,
+) -> Result<(), SimulateError> {
 	for key in keys {
-		press_key(key);
-		release_key(key);
+		press_key(*key, delay)?;
+		release_key(*key, delay)?;
 	}
+	Ok(())
 }
 
-pub fn paste_text(text: &str) {
-	let mut clipboard = Clipboard::new().expect("Couldn't get clipboard.");
+pub fn paste_text(text: &str, delay: Duration) -> Result<(), SimulateError> {
+	let mut clipboard = Clipboard::new().expect("Failed to get clipboard.");
 	let old_text_result = clipboard.get_text();
 
 	clipboard
 		.set_text(text)
-		.expect("Couldn't set clipboard text.");
+		.expect("Failed to set clipboard text.");
 
-	press_key(Key::ControlLeft);
-	press_key(Key::KeyV);
-	release_key(Key::ControlLeft);
-	release_key(Key::KeyV);
+	press_keys(&vec![Key::ControlLeft, Key::KeyV], delay)?;
+	release_keys(&vec![Key::KeyV, Key::ControlLeft], delay)?;
+
+	clipboard.clear().expect("Failed to clear clipboard.");
 
 	if let Ok(old_text) = old_text_result {
 		clipboard
 			.set_text(old_text)
-			.expect("Couldn't reset clipboard text.");
+			.expect("Failed to reset clipboard text.");
 	}
+
+	Ok(())
 }

@@ -32,7 +32,7 @@ pub fn get_config() -> ScrypeSettings {
 	let config_data = serde_json::from_reader(config_file);
 
 	if let Err(err) = config_data {
-		panic!("Failed to deserialize config file. \n{}", err);
+		panic!("Failed to deserialize config file.\n{}", err);
 	}
 
 	config_data.unwrap()

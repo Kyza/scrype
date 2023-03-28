@@ -1,3 +1,7 @@
+#![feature(future_join)]
+#![feature(async_closure)]
+#![feature(duration_constants)]
+
 use rdev::grab;
 
 pub mod config;
