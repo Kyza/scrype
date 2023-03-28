@@ -82,7 +82,7 @@ pub fn event_listener(event: Event) -> Option<Event> {
 											Key::Backspace;
 											backspace_amount
 										],
-										Duration::NANOSECOND,
+										Duration::ZERO,
 									)
 									.expect(
 										"Failed to backspace matched text.",
