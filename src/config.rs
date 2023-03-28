@@ -24,9 +24,9 @@ pub fn get_config() -> ScrypeSettings {
 
 	if let Err(err) = config_file {
 		panic!(
-            "Failed to read config file. Please create one at \"{:?}\" if it doesn't exist.\n{}",
-            config_file_path, err
-        );
+				"Failed to read config file. Please create one at \"{:?}\" if it doesn't exist.\n{}",
+				config_file_path, err
+		);
 	}
 	let config_file = config_file.unwrap();
 
@@ -91,9 +91,9 @@ pub fn get_macro_config(name: String) -> MacroConfig {
 
 	if let Err(err) = config_file {
 		panic!(
-            "Failed to read config file. Please create one at \"{:?}\" if it doesn't exist.\n{}",
-            config_file_path, err
-        );
+				"Failed to read config file. Please create one at \"{:?}\" if it doesn't exist.\n{}",
+				config_file_path, err
+		);
 	}
 	let config_file = config_file.unwrap();
 
