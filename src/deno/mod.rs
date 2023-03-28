@@ -5,8 +5,12 @@ use std::{
 };
 
 use path_absolutize::Absolutize;
+use rdev::Key;
 
-use crate::{config, simulate::paste_text};
+use crate::{
+	config,
+	simulate::{paste_text, release_keys},
+};
 
 pub fn start_macro(macro_name: &String, match_config: config::Match) {
 	let macro_file_path = config::get_config_directory()
@@ -50,6 +54,18 @@ pub fn start_macro(macro_name: &String, match_config: config::Match) {
 }
 
 pub fn run_tasks(output: &Output) {
+	// Release any important modifier keys.
+	release_keys(vec![
+		Key::ShiftLeft,
+		Key::ShiftRight,
+		Key::ControlLeft,
+		Key::ControlRight,
+		Key::MetaLeft,
+		Key::MetaRight,
+		Key::Alt,
+		Key::AltGr,
+	]);
+
 	let lines = output.stdout.lines();
 
 	for line in lines {
