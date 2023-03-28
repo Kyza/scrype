@@ -32,7 +32,7 @@ pub fn event_listener(event: Event) -> Option<Event> {
 	if is_handler_locked() {
 		return Some(event);
 	}
-	let now = Instant::now();
+	let macro_now = Instant::now();
 
 	match event.event_type {
 		EventType::KeyPress(_) => {
@@ -57,7 +57,8 @@ pub fn event_listener(event: Event) -> Option<Event> {
 			history.truncate(history.len() - config.suffix.len());
 
 			for macro_name in config.macros {
-				let macro_config = config::get_macro_config(&macro_name);
+				let macro_config =
+					config::get_macro_config(macro_name.to_string());
 
 				for macro_config_match in macro_config.matches {
 					match macro_config_match.r#type {
@@ -75,41 +76,41 @@ pub fn event_listener(event: Event) -> Option<Event> {
 								// Clone the name so it doesn't get moved.
 								let macro_name = macro_name.clone();
 								thread::spawn(move || {
-									block_on(async {
-										let backspace_fut = async {
-											simulate::type_keys(
-												&vec![
-													Key::Backspace;
-													backspace_amount
-												],
-												Duration::NANOSECOND,
-											).expect("Failed to backspace matched text.");
-										};
+									let backspace_now = Instant::now();
+									simulate::type_keys(
+										&vec![
+											Key::Backspace;
+											backspace_amount
+										],
+										Duration::NANOSECOND,
+									)
+									.expect(
+										"Failed to backspace matched text.",
+									);
+									println!(
+										"Backspaced in {}ms.",
+										backspace_now.elapsed().as_millis()
+									);
 
-										let macro_fut = async {
-											let code_now = Instant::now();
-											start_macro(
-												&macro_name,
-												macro_config_match,
-											);
-											println!(
-												"Macro code ran in {}ms.",
-												code_now
-													.elapsed()
-													.as_millis()
-											);
-										};
+									let code_now = Instant::now();
+									start_macro(
+										&macro_name,
+										macro_config_match,
+									);
+									println!(
+										"{} code ran in {}ms.",
+										macro_name,
+										code_now.elapsed().as_millis()
+									);
 
-										join!(backspace_fut, macro_fut).await;
+									history::clear_history();
+									unlock_handler();
 
-										history::clear_history();
-										unlock_handler();
-
-										println!(
-											"Macro ran in {}ms.",
-											now.elapsed().as_millis()
-										);
-									});
+									println!(
+										"{} macro ran in {}ms.",
+										macro_name,
+										macro_now.elapsed().as_millis()
+									);
 								});
 
 								return Some(event);

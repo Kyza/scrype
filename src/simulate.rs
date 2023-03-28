@@ -65,7 +65,8 @@ pub fn type_keys(
 
 pub fn paste_text(text: &str, delay: Duration) -> Result<(), SimulateError> {
 	let mut clipboard = Clipboard::new().expect("Failed to get clipboard.");
-	let old_text_result = clipboard.get_text();
+	let old_clipboard_image = clipboard.get_image();
+	let old_clipboard_text = clipboard.get_text();
 
 	clipboard
 		.set_text(text)
@@ -74,12 +75,17 @@ pub fn paste_text(text: &str, delay: Duration) -> Result<(), SimulateError> {
 	press_keys(&vec![Key::ControlLeft, Key::KeyV], delay)?;
 	release_keys(&vec![Key::KeyV, Key::ControlLeft], delay)?;
 
+	// This should remove the pasted text from the clipboard history as well as clearing the clipboard.
 	clipboard.clear().expect("Failed to clear clipboard.");
 
-	if let Ok(old_text) = old_text_result {
+	if let Ok(old_text) = old_clipboard_text {
 		clipboard
 			.set_text(old_text)
 			.expect("Failed to reset clipboard text.");
+	} else if let Ok(old_image) = old_clipboard_image {
+		clipboard
+			.set_image(old_image)
+			.expect("Failed to reset clipboard image.");
 	}
 
 	Ok(())

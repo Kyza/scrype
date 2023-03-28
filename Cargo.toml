@@ -22,3 +22,4 @@ rust-embed = { version = "6.6.0", features = [
 path-absolutize = "3.0.14"
 # duct = "0.13.6"
 futures = "0.3.27"
+memoize = "0.4.0"

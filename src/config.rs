@@ -4,6 +4,7 @@ use std::{
 };
 
 use home::home_dir;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -83,7 +84,7 @@ pub struct MacroConfig {
 	pub matches: Vec<Match>,
 }
 
-pub fn get_macro_config(name: &str) -> MacroConfig {
+pub fn get_macro_config(name: String) -> MacroConfig {
 	let config_dir = get_config_directory();
 	let config_file_path = config_dir.join(name).join("config.json");
 	let config_file = File::open(&config_file_path);
