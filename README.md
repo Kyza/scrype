@@ -75,7 +75,7 @@ webview.title = "Eval";
 webview.navigate(`data:text/html,${encodeURIComponent(html)}`);
 webview.bind("resolve", (text) => {
 	webview.destroy();
-	console.log(`scrype_paste_text:${text}`);
+	console.log(`[SCRYPE]:${JSON.stringify({ type: "PASTE", data: { text } })}`);
 });
 webview.bind("exit", () => {
 	webview.destroy();
