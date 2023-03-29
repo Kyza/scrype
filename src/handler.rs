@@ -1,15 +1,20 @@
 use std::{
-	future::join,
 	sync::atomic::{AtomicBool, Ordering},
 	thread,
-	time::{Duration, Instant},
+	time::Instant,
 };
 
-use futures::executor::block_on;
+use cfg_if::cfg_if;
 use lazy_static::lazy_static;
-use rdev::{Event, EventType, Key};
+use rdev::{Event, EventType};
+use windows::Win32::UI::Input::KeyboardAndMouse::VK_BACK;
 
-use crate::{config, deno::start_macro, history, simulate};
+use crate::{
+	config,
+	deno::start_macro,
+	history,
+	simulate::{self},
+};
 
 lazy_static! {
 	static ref HANDLER_LOCKED: AtomicBool = AtomicBool::new(false);
@@ -32,7 +37,6 @@ pub fn event_listener(event: Event) -> Option<Event> {
 	if is_handler_locked() {
 		return Some(event);
 	}
-	let macro_now = Instant::now();
 
 	match event.event_type {
 		EventType::KeyPress(_) => {
@@ -67,30 +71,33 @@ pub fn event_listener(event: Event) -> Option<Event> {
 							{
 								lock_handler();
 
+								// Erase the prefix, match, and suffix, minus the last character since it gets blocked.
 								let backspace_amount =
 									macro_config_match.r#match.len()
 										+ config.prefix.len() + config
 										.suffix
-										.len();
+										.len() - 1;
 
 								// Clone the name so it doesn't get moved.
 								let macro_name = macro_name.clone();
 								thread::spawn(move || {
-									let backspace_now = Instant::now();
-									simulate::type_keys(
-										&vec![
-											Key::Backspace;
-											backspace_amount
-										],
-										Duration::ZERO,
-									)
-									.expect(
-										"Failed to backspace matched text.",
-									);
-									println!(
-										"Backspaced in {}ms.",
-										backspace_now.elapsed().as_millis()
-									);
+									cfg_if! {
+										if #[cfg(windows)] {
+											// Optimized backspacer.
+											// Windows can handle multiple presses without releases, but not all OSes can.
+											for _ in 0..backspace_amount {
+												simulate::win32::press_vk(VK_BACK);
+												simulate::minimal_sleep();
+											}
+											simulate::win32::release_vk(VK_BACK);
+											simulate::minimal_sleep();
+										} else {
+											simulate::type_keys(&vec![
+												Key::Backspace; backspace_amount
+											])
+											.expect("Failed to backspace match.");
+										}
+									}
 
 									let code_now = Instant::now();
 									start_macro(
@@ -105,15 +112,9 @@ pub fn event_listener(event: Event) -> Option<Event> {
 
 									history::clear_history();
 									unlock_handler();
-
-									println!(
-										"{} macro ran in {}ms.",
-										macro_name,
-										macro_now.elapsed().as_millis()
-									);
 								});
 
-								return Some(event);
+								return None;
 							}
 						}
 						match_type => {

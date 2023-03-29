@@ -23,3 +23,19 @@ path-absolutize = "3.0.14"
 # duct = "0.13.6"
 futures = "0.3.27"
 memoize = "0.4.0"
+cfg-if = "1.0.0"
+
+[dependencies.windows]
+version = "0.46.0"
+features = [
+	"Data_Xml_Dom",
+	"Win32_Foundation",
+	"Win32_Security",
+	"Win32_System_Memory",
+	"Win32_System_Threading",
+	"Win32_UI_WindowsAndMessaging",
+	"Win32_UI_Controls",
+	"Win32_UI_Input_KeyboardAndMouse",
+	"Win32_System_DataExchange",
+	"Win32_System_Ole",
+]

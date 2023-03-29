@@ -48,12 +48,7 @@ pub fn start_macro(macro_name: &String, match_config: config::Match) {
 
 	let output = deno.wait_with_output().expect("Failed to wait for Deno.");
 
-	// match output.status {
-	// 	ExitStatus => run_tasks(&output),
-	// }
 	run_tasks(&output);
-
-	println!("{:#?}", output);
 }
 
 pub fn run_tasks(output: &Output) {
