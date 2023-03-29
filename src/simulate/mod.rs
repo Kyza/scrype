@@ -1,6 +1,3 @@
-
-
-
 use arboard::Clipboard;
 use cfg_if::cfg_if;
 use rdev::{simulate, EventType, Key, SimulateError};
@@ -41,8 +38,8 @@ pub fn send_string(string: &str) -> Result<(), SimulateError> {
 		} else {
 			simulate(&EventType::KeyPress(Key::ControlLeft))?;
 			simulate(&EventType::KeyPress(Key::KeyV))?;
-			simulate(&EventType::KeyPress(Key::KeyV))?;
-			simulate(&EventType::KeyPress(Key::ControlLeft))?;
+			simulate(&EventType::KeyRelease(Key::KeyV))?;
+			simulate(&EventType::KeyRelease(Key::ControlLeft))?;
 		}
 	}
 
